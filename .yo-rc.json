@@ -1,0 +1,11 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "isCreatingSolution": true,
+    "environment": "spo",
+    "version": "1.5.1",
+    "libraryName": "injio-servicedirectory-detail-page",
+    "libraryId": "e7f0c8b4-e996-4f46-8788-a85852eda1a9",
+    "packageManager": "npm",
+    "componentType": "webpart"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "injio-servicedirectory-detail-page-client-side-solution",
+    "id": "e7f0c8b4-e996-4f46-8788-a85852eda1a9",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true
+  },
+  "paths": {
+    "zippedPackage": "solution/injio-servicedirectory-detail-page.sppkg"
+  }
+}
