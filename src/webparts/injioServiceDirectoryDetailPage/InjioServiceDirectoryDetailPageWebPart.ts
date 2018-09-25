@@ -26,6 +26,7 @@ import {
 import MockHttpClient from './MockHttpClient';
 import InjioDialog from './InjioDialog';
 import * as JQuery from 'jquery';
+
 import styles from './InjioServiceDirectoryDetailPageWebPart.module.scss';
 import * as strings from 'InjioServiceDirectoryDetailPageWebPartStrings';
 import { ServiceDirectory, ServiceDirectorys } from './ServiceDirectoryList';
@@ -52,7 +53,7 @@ export default class InjioServiceDirectoryDetailPageWebPart extends BaseClientSi
   }
 
 
-  private loadSP() : Promise<any> {
+  /*private loadSP() : Promise<any> {
     var globalExportsName = null, p = null;
     var promise = new Promise<any>((resolve, reject) => {
       globalExportsName = '$_global_init'; p = (window[globalExportsName] ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/init.js', { globalExportsName }));
@@ -86,8 +87,64 @@ export default class InjioServiceDirectoryDetailPageWebPart extends BaseClientSi
         });
     });
     return promise;
-  }
+  }*/
 
+  private loadSP() : Promise<any> {
+    var globalExportsName = null, p = null;
+    const siteColUrl = this.context.pageContext.web.absoluteUrl;
+    var promise = new Promise<any>((resolve, reject) => {
+      globalExportsName = '$_global_init'; p = (window[globalExportsName] ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/init.js', { globalExportsName }));
+      p.catch((error) => { })
+        .then(($_global_init): Promise<any> => {
+          globalExportsName = 'Sys'; p = (window[globalExportsName] ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/MicrosoftAjax.js', { globalExportsName }));
+          return p;
+        }).catch((error) => { })
+        .then((Sys): Promise<any> => {
+          globalExportsName = 'Sys'; p = ((window[globalExportsName] && window[globalExportsName].ClientRuntimeContext) ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/ScriptResx.ashx?name=sp.res&culture=en-us', { globalExportsName }));
+          return p;
+        })/*.catch((error) => { })
+        .then((Sys): Promise<any> => {
+          globalExportsName = 'SP-Runtime'; p = ((window[globalExportsName] && window[globalExportsName].ClientRuntimeContext) ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/SP.Runtime.js', { globalExportsName }));
+          return p;
+        })*/.catch((error) => { })
+        .then((SP): Promise<any> => {
+          globalExportsName = 'SP'; p = ((window[globalExportsName] && window[globalExportsName].ClientContext) ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/SP.js', { globalExportsName }));
+          return p;
+        })
+        .then((Sys): Promise<any> => {
+          globalExportsName = 'SP-Init'; p = ((window[globalExportsName] && window[globalExportsName].ClientRuntimeContext) ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/SP.Init.js', { globalExportsName }));
+          return p;
+        }).catch((error) => { })
+        .then((Sys): Promise<any> => {
+          globalExportsName = 'SP-UI-Dialog'; p = ((window[globalExportsName] && window[globalExportsName].ClientRuntimeContext) ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/SP.UI.Dialog.js', { globalExportsName }));
+          return p;
+        }).catch((error) => { })
+        .then((Sys): Promise<any> => {
+          globalExportsName = 'RP'; p = ((window[globalExportsName] && window[globalExportsName].ClientRuntimeContext) ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/reputation.js', { globalExportsName }));
+          return p;
+        }).catch((error) => { })
+        .then((Sys): Promise<any> => {
+          globalExportsName = 'SP-ClientTemplates'; p = ((window[globalExportsName] && window[globalExportsName].ClientRuntimeContext) ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/clienttemplates.js', { globalExportsName }));
+          return p;
+        }).catch((error) => { })
+        .then((Sys): Promise<any> => {
+          globalExportsName = 'SP-UI-Reputation-Debug'; p = ((window[globalExportsName] && window[globalExportsName].ClientRuntimeContext) ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript('/_layouts/15/SP.UI.Reputation.debug.js', { globalExportsName }));
+          return p;
+        }).catch((error) => { })
+        .then((Sys): Promise<any> => {
+          globalExportsName = 'Jquery-Rateit-min'; p = ((window[globalExportsName] && window[globalExportsName].ClientRuntimeContext) ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadScript(siteColUrl + '/SiteAssets/jquery-rateit/jquery.rateit.min.js', { globalExportsName }));
+          return p;
+        }).catch((error) => { })
+        .then((Sys): Promise<any> => {
+          globalExportsName = 'RateIt CSS'; p = ((window[globalExportsName] && window[globalExportsName].ClientRuntimeContext) ? Promise.resolve(window[globalExportsName]) : SPComponentLoader.loadCss(siteColUrl + '/SiteAssets/jquery-rateit/rateit.css'));
+          return p;
+        }).catch((error) => { })
+        .then((SP) => {
+          resolve(SP);
+        });
+    });
+    return promise;
+  }
 
   /*private _loadSPJSOMScripts() {
  
@@ -117,12 +174,12 @@ export default class InjioServiceDirectoryDetailPageWebPart extends BaseClientSi
           });
         })
         .then((): Promise<{}> => {
-          return SPComponentLoader.loadScript(siteColUrl + '/siteassets/jquery.rateit.min.js', {            
+          return SPComponentLoader.loadScript(siteColUrl + '/SiteAssets/jquery-rateit/jquery.rateit.min.js', {            
             globalExportsName: 'jQuery',            
           });
         })        
         .then((): void => {          
-          SPComponentLoader.loadCss(siteColUrl + '/siteassets/rateit.css');
+          SPComponentLoader.loadCss(siteColUrl + '/SiteAssets/jquery-rateit/rateit.css');
           jQuery('rateit').rateit();
         })
       } catch (error) {
@@ -375,6 +432,7 @@ protected _renderServiceDirectoryList(response){
     console.log(this);
     if(response != null)
     {
+      var avgRating =  response[0].AverageRating;
         serviceDirectoryHTML=`<div id="leftContent" class=${styles["left-content"]} >
               <div class=${styles.logo}><img class=${styles.logo} src="https://webvine.sharepoint.com/sites/MIqbalTest/PublishingImages/Lists/Service%20Directory/AllItems/asus.jpg" /></div>
             <div style="position:relative; left:10px;">
@@ -385,7 +443,9 @@ protected _renderServiceDirectoryList(response){
               <div><span class=${styles.fieldCaptions}>Website:</span> ${response[0].Website != null?response[0].Website:"-"}</div>
               <div><span class=${styles.fieldCaptions}>Phone:</span> ${response[0].Phone != null?response[0].Phone:"-"}</div>
               <div><span class=${styles.fieldCaptions}>ABN:</span> ${response[0].ABN != null?response[0].ABN:"-"}</div>
-              <div><span class=${styles.fieldCaptions}>Rating:</span> ${response[0].AverageRating != null?response[0].AverageRating:"-"}</div>
+              <div><span class=${styles.fieldCaptions}>Rating:</span> ${response[0].AverageRating != null?response[0].AverageRating:"-"}<input type="button"  value="R" id="btnRating" />
+              </input><input type="hidden" id="backing7" value="${response[0].AverageRating}" ></div>
+              <div class="rateit" id="#rateing1" data-rateit-resetable="false" data-rateit-min="0" data-rateit-max="5" data-rateit-backingfld="#backing7"></div>
               <div><span class=${styles.fieldCaptions}>Contact:</span> ${response[0].Contact != null?response[0].Contact:"-"}</div>
               <div><span class=${styles.fieldCaptions}>Service Type:</span> ${response[0].ServiceType != null?response[0].ServiceType:"-"}</div>
             </div>
@@ -395,8 +455,78 @@ protected _renderServiceDirectoryList(response){
               <div class=${styles.providerDescription}>${response[0].Description != null?response[0].Description:"-"}</div>
         </div>
         `;
+        
         this.domElement.querySelector('#serviceDirectory').innerHTML=`${serviceDirectoryHTML}`;
+        console.log("Loading Jquery Selector");
+        console.log(JQuery('#rating1'));
+           //  JQuery("rateit").bind('rated', function() { JQuery("rateit").rateit({  max: 5,  step: 1,  backingfld: '#backing7'   }); });  
+           //  JQuery("rateit").bind('rated', function() { JQuery("rateit").rateit('value',avgRating); });  
+          // JQuery("#rateing1").rateit('value',avgRating);
+          var wrapper:any= require('./RateItWrapper.js');
+          wrapper.greeting;
+       //   wrapper.r();
+          var ratingDom:any = JQuery('#rating1');
+          ratingDom.bind()
+          //ratingDom.rateit({  min: 0,  max: 5,  step: 1, resetable: false, value: avgRating,  starwidth: 16,    starheight: 16  });
+          //('rated', function() {  JQuery("#rating1").rateit({  min: 0,  max: 5,  step: 1, resetable: false, value: avgRating,  starwidth: 16,    starheight: 16  });});
+
+        this.domElement.querySelector('#btnRating').addEventListener('click', () => {
+          var objThis = this;
+          console.log(objThis) ;
+         this.myRating(this.myParam,2, objThis)    
+      });
+      
+
+
+
+
     }
+}
+
+protected myRating(itemId, value, obj)
+{
+
+    
+      console.log("Set Rating Functionality is Called");
+      console.log(obj);
+        let spCurrentContext =  SP.ClientContext.get_current();
+        
+      console.log(spCurrentContext);
+
+      let _listId:any = "E1740B60-6B6D-410F-803B-5EFDE083103B";
+          console.log(spCurrentContext);
+          console.log(this.context);
+          console.log(_listId);
+          console.log(itemId);
+          console.log(value);
+        
+        
+      var rating:any = Microsoft.Office.Server.ReputationModel.Reputation.setRating(spCurrentContext, _listId, itemId, value);
+      spCurrentContext.executeQueryAsync(
+          function()
+          {
+              console.log(rating);
+               console.log(rating.m_value);
+                console.log("5001");
+                  var r = obj.domElement.querySelector('#rating1');
+                console.log(r);
+                console.log(JQuery('rateit'));
+                //require('../../../node_modules/jquery.rateit/scripts/jquery.rateit.js');
+               // require('../../../node_modules/jquery.rateit/scripts/rateit.css');
+               JQuery("rateit").bind('rated', function() { console.log('rating: ' +JQuery(this).rateit('value')); JQuery(this).rateit('value',rating.m_value); });  
+                //JQuery("rateit").rateit('value', value);
+                //r = obj.domElement.querySelector("#rating1");
+                console.log("5002");
+                  //console.log(r);
+                  obj._getServiceProviderData(obj.myParam);
+          },
+          function(event,args)
+          {
+              console.log(args.get_message);
+          }
+        );
+
+    
 }
 
 
